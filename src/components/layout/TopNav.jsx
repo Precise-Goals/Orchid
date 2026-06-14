@@ -7,6 +7,7 @@ export function TopNav({ theme, onThemeChange }) {
 
   return (
     <header className="top-nav">
+      
       <NavLink to="/" className="brand" aria-label="CODEX home">
         <img src="/logo.png" alt="" />
         <span>CODEX</span>
@@ -31,6 +32,7 @@ export function TopNav({ theme, onThemeChange }) {
           {theme === 'light' ? <FiMoon /> : <FiSun />}
         </button>
       </div>
+      <audio src="/backg.mp3" autoPlay loop></audio>
     </header>
   )
 }

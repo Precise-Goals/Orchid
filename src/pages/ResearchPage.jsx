@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { FiBarChart2, FiAlertCircle } from 'react-icons/fi'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiAlertCircle } from 'react-icons/fi'
 import { AgentRail } from '../components/research/AgentRail'
 import { ResearchHero } from '../components/research/ResearchHero'
 import { ResearchInput } from '../components/research/ResearchInput'
 import { ResearchChips } from '../components/research/ResearchChips'
+import { ResearchResult } from '../components/research/ResearchResult'
 import { NewResearch } from '../components/research/NewResearch'
-import { agentSteps } from '../data/research'
 import { useAuth } from '../hooks/useAuth'
 import { getGeminiPlan } from '../agents/planner'
 import { synthesizeResearch } from '../agents/synthesizer'
@@ -21,6 +22,8 @@ export function ResearchPage() {
   const [error, setError] = useState(null)
   const [activeStep, setActiveStep] = useState(0)
   const [showNew, setShowNew] = useState(!locationPrompt)
+  const [result, setResult] = useState(null)
+  const [plan, setPlan] = useState(null)
 
   const runResearch = useCallback(async (query = input, source = 'all') => {
     const trimmed = query.trim()
@@ -29,38 +32,38 @@ export function ResearchPage() {
     setInput(trimmed)
     setIsRunning(true)
     setError(null)
+    setResult(null)
     setActiveStep(0)
     setShowNew(false)
 
     try {
-      // Step 1: Institutional Planner
-      console.log('[Orchid Intelligence] Phase 1: Planning...')
-      const plan = await getGeminiPlan(trimmed)
+      // Phase 1: Planning
+      const resolvedPlan = await getGeminiPlan(trimmed)
+      setPlan(resolvedPlan)
       setActiveStep(1)
 
-      // Step 2: Agentic Synthesis (Includes Google Search Tool Grounding)
-      console.log('[Orchid Intelligence] Phase 2: Live Reasoning & Signal Discovery...')
-      const result = await synthesizeResearch(trimmed, plan.source_priority)
-      setActiveStep(3)
+      // Phase 2: Synthesis
+      setActiveStep(2)
+      const resolved = await synthesizeResearch(trimmed, resolvedPlan.source_priority)
+      setActiveStep(4)
 
-      // Step 3: Final Output
-      console.log('%c[ORCHID SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
-      console.log('%cQuery:', 'font-weight: bold', trimmed)
-      console.log('%cStrategy:', 'font-weight: bold', plan.source_priority)
-      console.log('%cThesis:', 'font-weight: bold', result.summary)
-      console.log('%cFindings:', 'font-weight: bold')
-      result.bullets.forEach(b => console.log(' •', b))
-      console.log('%cConfidence:', 'color: #6f8d79; font-weight: bold', `${result.confidence}%`)
-      console.log('%c---------------------------------------', 'color: #ded9ce')
+      setResult({
+        query: trimmed,
+        intent: resolvedPlan.intent ?? 'general research',
+        summary: resolved.summary,
+        bullets: resolved.bullets,
+        confidence: resolved.confidence,
+        sources: resolved.sources ?? [],
+        trace: resolved.trace ?? resolvedPlan.reasoning_steps ?? [],
+      })
 
       setIsRunning(false)
-      setActiveStep(4)
     } catch (err) {
       console.error('[System Error]:', err)
-      setError(err.message || 'Investigation failed. Check console for debug traces.')
+      setError(err.message || 'Investigation failed.')
       setIsRunning(false)
     }
-  }, [input, isRunning, language])
+  }, [input, isRunning])
 
   if (showNew) {
     return <NewResearch onStart={runResearch} />
@@ -69,17 +72,17 @@ export function ResearchPage() {
   return (
     <section className="research-page">
       <ResearchHero language={language} onLanguageChange={setLanguage} />
-      
-      <ResearchInput 
-        input={input} 
-        setInput={setInput} 
-        isRunning={isRunning} 
-        onSubmit={runResearch} 
+
+      <ResearchInput
+        input={input}
+        setInput={setInput}
+        isRunning={isRunning}
+        onSubmit={runResearch}
       />
 
       <AnimatePresence>
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -96,22 +99,32 @@ export function ResearchPage() {
       }} />
 
       <AgentRail activeStep={activeStep} isRunning={isRunning} />
-      
-      {isRunning && (
-        <div className="running-indicator">
-          <p>Orchid Intelligence System is investigating... check console for multimodal signals.</p>
-        </div>
-      )}
-    </section>
-  )
-}
 
-function EmptyResearch() {
-  return (
-    <div className="empty-research">
-      <FiBarChart2 aria-hidden="true" />
-      <h2>No active run</h2>
-      <p>Start an investigation to see the answer, citations, confidence, and reasoning trace.</p>
-    </div>
+      {isRunning && (
+        <motion.div
+          className="running-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="running-dots">
+            <span /><span /><span />
+          </div>
+          <p>Orchid Intelligence is reasoning with DeepSeek R1...</p>
+        </motion.div>
+      )}
+
+      <AnimatePresence>
+        {result && !isRunning && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <ResearchResult run={result} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   )
 }

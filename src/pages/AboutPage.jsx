@@ -27,9 +27,11 @@ export function AboutPage() {
         <div className="about-launcher">
           <FiSearch />
           <input
+            type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="What would you like to research?"
+            name="research"
           />
           <button onClick={() => navigate("/research", { state: { prompt } })}>
             <FiSend /> Start
@@ -72,7 +74,10 @@ export function AboutPage() {
         <div className="bento-item surface-bg">
           <FiShield />
           <h3>Source Grounding</h3>
-          <p>Strict data provenance from YFinance and Moneycontrol. No hallucinations, only evidence.</p>
+          <p>
+            Strict data provenance from YFinance and Moneycontrol. No
+            hallucinations, only evidence.
+          </p>
         </div>
 
         <div className="bento-item surface-bg">

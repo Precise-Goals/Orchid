@@ -1,34 +1,60 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+/**
+ * Orchid Planner — OpenRouter DeepSeek R1 (free tier)
+ * Replaces Gemini which had quota = 0 on free tier.
+ */
+
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions";
+// Auto-router: OpenRouter picks the best currently available free model
+const PLANNER_MODEL = "openrouter/auto";
 
 export async function getGeminiPlan(query) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  
-  if (!apiKey || apiKey.length < 10) {
-    console.warn("[Orchid Planner] Missing Gemini API Key. Use VITE_GEMINI_API_KEY in .env.");
-    return fallbackPlan();
-  }
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  // Use gemini-1.5-flash which is widely compatible
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = `You are an expert research planner. For the query "${query}", provide a JSON plan with fields: intent, source_priority (YFinance or Moneycontrol), and reasoning_steps (array). Output ONLY valid JSON.`;
-  
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    // Aggressive JSON extraction in case of markdown or prefixing
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Invalid JSON response from Gemini");
+    const response = await fetch(OPENROUTER_BASE, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": window.location.origin,
+        "X-Title": "Orchid Intelligence",
+      },
+      body: JSON.stringify({
+        model: PLANNER_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are an expert financial research planner. Respond ONLY with valid JSON — no markdown, no explanation.",
+          },
+          {
+            role: "user",
+            content: `For the query: "${query}", produce a JSON object with exactly these fields:
+{
+  "intent": "short description of the research intent",
+  "source_priority": "YFinance" or "Moneycontrol",
+  "reasoning_steps": ["step 1", "step 2", "step 3"]
+}`,
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: 512,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`OpenRouter ${response.status}: ${err}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices?.[0]?.message?.content ?? "";
+    // Strip reasoning tags (DeepSeek R1 wraps in <think>…</think>)
+    const clean = text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    const jsonMatch = clean.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found in planner response");
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
-    if (error.message?.includes("404")) {
-      console.error("[Orchid Planner] Error 404: Model not found. Falling back to institutional strategy.");
-    } else if (error.message?.includes("API_KEY_SERVICE_BLOCKED")) {
-      console.error("[Orchid Planner] Error 403: API key restricted. Enable 'Generative Language API'.");
-    } else {
-      console.error("[Orchid Planner] Execution Error:", error.message);
-    }
+    console.warn("[Orchid Planner] Error:", error.message, "— using fallback strategy.");
     return fallbackPlan();
   }
 }
@@ -37,6 +63,6 @@ function fallbackPlan() {
   return {
     intent: "general_research",
     source_priority: "Moneycontrol",
-    reasoning_steps: ["Activate signal retrieval", "Validate source provenance", "Synthesize brief"]
+    reasoning_steps: ["Activate signal retrieval", "Validate source provenance", "Synthesize brief"],
   };
 }

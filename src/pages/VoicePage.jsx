@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, Suspense, lazy } from 'react'
-import { FiMic, FiX } from 'react-icons/fi'
+import { FiMic } from 'react-icons/fi'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import { getGeminiPlan } from '../agents/planner'
@@ -19,6 +19,15 @@ export function VoicePage() {
       recognitionRef.current?.stop?.()
       window.speechSynthesis?.cancel?.()
     }
+  }, [])
+
+  // Greet the user when the page loads
+  useEffect(() => {
+    const firstName = profile?.name?.split(' ')[0] || 'there'
+    const greeting = `Hello ${firstName}, hope you are doing well, how may I assist you today?`
+    const timer = setTimeout(() => sarvamTTS(greeting), 600)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function sarvamTTS(text) {
@@ -60,11 +69,28 @@ export function VoicePage() {
 
   function fallbackTTS(text) {
     window.speechSynthesis.cancel()
-    const utterance = new SynthesisUtterance(text)
+    const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = profile?.language === 'Hindi' ? 'hi-IN' : 'en-IN'
     utterance.onstart = () => setVoiceState('speaking')
     utterance.onend = () => setVoiceState('idle')
     window.speechSynthesis.speak(utterance)
+  }
+
+  async function processQuery(text) {
+    if (!text.trim()) return
+    setVoiceState('thinking')
+    try {
+      console.log('[Orchid Intelligence] Starting Voice RAG Pipeline...')
+      const plan = await getGeminiPlan(text)
+      const result = await synthesizeResearch(text, plan.source_priority)
+      console.log('%c[ORCHID VOICE RESULT]', 'color: #347c83; font-weight: bold;')
+      console.log('Query:', text)
+      console.log('Synthesis:', result.summary)
+      sarvamTTS(result.summary)
+    } catch (err) {
+      console.error('[Orchid Error]:', err)
+      sarvamTTS('An internal error occurred while processing your request.')
+    }
   }
 
   function startVoice() {
@@ -78,50 +104,45 @@ export function VoicePage() {
     recognition.lang = profile?.language === 'Hindi' ? 'hi-IN' : 'en-IN'
     recognition.continuous = false
     recognition.interimResults = true
-    
+
     recognition.onstart = () => {
       setVoiceState('listening')
       setTranscript('')
     }
 
-    recognition.onresult = async (event) => {
+    recognition.onresult = (event) => {
       const current = event.results[0][0].transcript
       setTranscript(current)
-      
+
       if (event.results[0].isFinal) {
-        setVoiceState('thinking')
-        try {
-          console.log('[Orchid Intelligence] Starting Voice RAG Pipeline...')
-          const plan = await getGeminiPlan(current)
-          const result = await synthesizeResearch(current, plan.source_priority)
-          
-          // Log results to console as requested
-          console.log('%c[ORCHID VOICE RESULT]', 'color: #347c83; font-weight: bold;')
-          console.log('Query:', current)
-          console.log('Synthesis:', result.summary)
-          
-          sarvamTTS(result.summary)
-        } catch (err) {
-          console.error('[Orchid Error]:', err)
-          sarvamTTS("An internal error occurred while processing your request.")
-        }
+        // Auto-triggered final result — process immediately
+        processQuery(current)
       }
     }
 
     recognition.onend = () => {
+      // Only reset to idle if we didn't move to thinking/speaking
       setVoiceState((state) => (state === 'listening' ? 'idle' : state))
     }
-    
+
     recognitionRef.current = recognition
     recognition.start()
   }
 
-  function cancelVoice() {
-    recognitionRef.current?.stop?.()
-    window.speechSynthesis?.cancel?.()
-    setVoiceState('idle')
-    setTranscript('')
+  function handleMicClick() {
+    if (voiceState === 'listening') {
+      // User taps mic while listening → stop and process whatever was captured
+      recognitionRef.current?.stop?.()
+      if (transcript.trim()) {
+        processQuery(transcript)
+      } else {
+        setVoiceState('idle')
+      }
+    } else if (voiceState === 'idle' || voiceState === 'unsupported') {
+      startVoice()
+    }
   }
+
 
   return (
     <motion.section 
@@ -151,23 +172,15 @@ export function VoicePage() {
       </div>
       
       <div className="voice-minimal-actions">
-        <motion.button 
+        <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          type="button" 
-          className={`voice-primary ${voiceState === 'listening' ? 'active' : ''}`} 
-          onClick={startVoice} 
+          type="button"
+          className={`voice-primary ${voiceState === 'listening' ? 'active' : ''}`}
+          onClick={handleMicClick}
+          aria-label={voiceState === 'listening' ? 'Stop and process' : 'Start listening'}
         >
           <FiMic aria-hidden="true" />
-        </motion.button>
-        <motion.button 
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          type="button" 
-          className="voice-cancel" 
-          onClick={cancelVoice} 
-        >
-          <FiX aria-hidden="true" />
         </motion.button>
       </div>
 
@@ -187,4 +200,3 @@ export function VoicePage() {
   )
 }
 
-const SynthesisUtterance = typeof window !== 'undefined' ? window.SpeechSynthesisUtterance : class {}

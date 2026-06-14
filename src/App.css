@@ -1543,3 +1543,14 @@ header.top-nav {
 .icon-button {
   border-radius: 6rem;
 }
+.live-transcript {
+    z-index: 9888;
+    translate: 59% -75%;
+}
+
+.voice-3d-container {
+    overflow: initial;
+}
+body::before {
+    background: linear-gradient(140deg, rgba(193, 95, 60, 0.12), transparent 36%), linear-gradient(313deg, rgba(52, 124, 131, 0.13), transparent 34%), radial-gradient(circle at 50% 0%, rgb(255 255 255 / 22%), transparent 32%);
+}
