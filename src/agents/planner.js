@@ -11,7 +11,7 @@ export async function getGeminiPlan(query) {
   const genAI = new GoogleGenerativeAI(apiKey);
   // Use gemini-1.5-flash which is widely compatible
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = `You are an expert research planner. For the query "${query}", provide a JSON plan with fields: intent, source_priority (GNews, YFinance, or Moneycontrol), and reasoning_steps (array). Output ONLY valid JSON.`;
+  const prompt = `You are an expert research planner. For the query "${query}", provide a JSON plan with fields: intent, source_priority (YFinance or Moneycontrol), and reasoning_steps (array). Output ONLY valid JSON.`;
   
   try {
     const result = await model.generateContent(prompt);
@@ -23,7 +23,7 @@ export async function getGeminiPlan(query) {
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
     if (error.message?.includes("404")) {
-      console.error("[Orchid Planner] Error 404: Model not found. Falling back to broad search strategy.");
+      console.error("[Orchid Planner] Error 404: Model not found. Falling back to institutional strategy.");
     } else if (error.message?.includes("API_KEY_SERVICE_BLOCKED")) {
       console.error("[Orchid Planner] Error 403: API key restricted. Enable 'Generative Language API'.");
     } else {
@@ -36,7 +36,7 @@ export async function getGeminiPlan(query) {
 function fallbackPlan() {
   return {
     intent: "general_research",
-    source_priority: "GNews",
+    source_priority: "Moneycontrol",
     reasoning_steps: ["Activate signal retrieval", "Validate source provenance", "Synthesize brief"]
   };
 }

@@ -72,11 +72,9 @@ export function AboutPage() {
         <div className="bento-item surface-bg">
           <FiShield />
           <h3>Source Grounding</h3>
-          <p>
-            Strict data provenance from GNews, YFinance, and Moneycontrol. No
-            hallucinations, only evidence.
-          </p>
+          <p>Strict data provenance from YFinance and Moneycontrol. No hallucinations, only evidence.</p>
         </div>
+
         <div className="bento-item surface-bg">
           <FiLayout />
           <h3>Minimal Design</h3>

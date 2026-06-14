@@ -40,13 +40,6 @@ export const NewResearch = memo(function NewResearch({ onStart }) {
             </button>
             <button 
               type="button" 
-              className={source === 'gnews' ? 'active' : ''} 
-              onClick={() => setSource('gnews')}
-            >
-              <FiBook /> GNews
-            </button>
-            <button 
-              type="button" 
               className={source === 'yfinance' ? 'active' : ''} 
               onClick={() => setSource('yfinance')}
             >

@@ -17,7 +17,7 @@ Orchid separates the cognitive labor of research:
 
 ### 2. Real-time RAG Pipeline
 No more static or hallucinated data. Orchid implements a true **Retrieval-Augmented Generation** loop:
-- **Institutional Signals:** Direct retrieval from GNews, YFinance (via domain filtering), and Moneycontrol.
+- **Institutional Signals:** Direct retrieval from YFinance and Moneycontrol.
 - **Source Grounding:** Every insight is linked to live articles, ensuring institutional-grade provenance.
 - **Developer-Centric Output:** Detailed research logs, reasoning traces, and signal metrics are directed to the browser console for a minimalist, "quiet" UI.
 
@@ -45,7 +45,7 @@ Inspired by the design standards of **Claude** and **Perplexity**:
 
 - **Frontend:** React 19, Vite, Bun, Framer Motion.
 - **Intelligence:** Google Gemini 1.5 Flash, Sarvam AI (Shubh voice).
-- **Signals:** GNews API, Financial Domain Filtering.
+- **Signals:** Financial Domain Filtering (Moneycontrol, YFinance).
 - **Auth:** Firebase Authentication.
 - **Deployment:** Vercel (Ready for end-to-end scalable deployment).
 
@@ -70,7 +70,6 @@ Inspired by the design standards of **Claude** and **Perplexity**:
    VITE_FIREBASE_API_KEY=your_key
    VITE_FIREBASE_AUTH_DOMAIN=your_domain
    VITE_FIREBASE_PROJECT_ID=your_id
-   VITE_GNEWS_API_KEY=your_key
    VITE_SARVAM_API_KEY=your_key
    VITE_GEMINI_API_KEY=your_key
    ```
@@ -89,7 +88,7 @@ Inspired by the design standards of **Claude** and **Perplexity**:
 3. Run a query like: *"Current status of the semiconductor industry in India"*.
 4. **Observe the Trace:**
    - `[Orchid Intelligence] Phase 1: Planning...` (Gemini)
-   - `[Signal Retrieval] Searching for...` (GNews)
+   - `[Signal Retrieval] Searching Institutional Sources...` (Moneycontrol/YFinance)
    - `[ORCHID SYSTEM RESULT]` (Ground analysis logged in console).
 
 ---

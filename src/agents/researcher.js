@@ -23,14 +23,15 @@ export async function fetchLiveSignals(query, sourcePriority) {
 
   if (sourcePriority === 'YFinance') {
     searchQuery = `${simplified} site:finance.yahoo.com`;
-  } else if (sourcePriority === 'Moneycontrol') {
+  } else {
+    // Default to Moneycontrol as the primary institutional source
     searchQuery = `${simplified} site:moneycontrol.com`;
   }
 
-  console.log(`[Signal Retrieval] Refined Search: "${searchQuery}"`);
+  console.log(`[Signal Retrieval] Searching Institutional Sources: "${searchQuery}"`);
 
   try {
-    // GNews v4 uses 'apikey' as the standard parameter
+    // We still use the GNews API as our search engine, but we focus strictly on institutional domains
     const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&apikey=${apiKey}&lang=en&max=5`;
     const response = await fetch(url);
     
