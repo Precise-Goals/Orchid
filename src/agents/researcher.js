@@ -1,17 +1,33 @@
 export async function fetchLiveSignals(query, sourcePriority) {
   const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
   
-  // Clean query: remove special chars and limit length to avoid 400 errors
-  let cleanQuery = query.replace(/[?]/g, "").slice(0, 100);
-  let searchQuery = cleanQuery;
+  // Advanced query processing:
+  // 1. Remove common conversational fluff
+  // 2. Extract key topical nouns/phrases
+  // 3. Limit to the most significant 5 words to keep search broad enough for GNews
+  let simplified = query.toLowerCase()
+    .replace(/(what|is|are|the|current|market|trends|for|prices|price|of|how|to|compare|vs|and)/g, "")
+    .replace(/[?]/g, "")
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 2)
+    .slice(0, 5)
+    .join(" ");
 
-  if (sourcePriority === 'YFinance') {
-    searchQuery = `"${cleanQuery}" site:finance.yahoo.com`;
-  } else if (sourcePriority === 'Moneycontrol') {
-    searchQuery = `"${cleanQuery}" site:moneycontrol.com`;
+  // Fallback to original if simplification was too aggressive
+  if (!simplified || simplified.length < 3) {
+    simplified = query.slice(0, 50).replace(/[?]/g, "");
   }
 
-  console.log(`[Signal Retrieval] Searching for: "${searchQuery}"`);
+  let searchQuery = simplified;
+
+  if (sourcePriority === 'YFinance') {
+    searchQuery = `${simplified} site:finance.yahoo.com`;
+  } else if (sourcePriority === 'Moneycontrol') {
+    searchQuery = `${simplified} site:moneycontrol.com`;
+  }
+
+  console.log(`[Signal Retrieval] Refined Search: "${searchQuery}"`);
 
   try {
     // GNews v4 uses 'apikey' as the standard parameter
