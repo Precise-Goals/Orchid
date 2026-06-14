@@ -12,7 +12,7 @@ export function TopNav({ theme, onThemeChange }) {
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-    audio.volume = 0.18
+    audio.volume = 0.8
     audio.play().then(() => setSoundOn(true)).catch(() => {
       // Blocked by browser — user must click the speaker button first
       setSoundOn(false)
