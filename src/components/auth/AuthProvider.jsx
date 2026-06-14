@@ -7,7 +7,7 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { AuthContext } from '../../contexts/authContext'
-import { auth } from '../../config/firebase'
+import { auth, hasFirebaseConfig } from '../../config/firebase'
 
 function profileKey(uid) {
   return `orchide-profile-${uid}`
@@ -19,6 +19,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!hasFirebaseConfig || !auth) {
+      setLoading(false)
+      return undefined
+    }
+
     return onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser)
       if (nextUser) {
@@ -32,6 +37,10 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function signUp({ name, email, password }) {
+    if (!auth) {
+      throw new Error('Firebase auth is not configured. Add the VITE_FIREBASE_* values to a .env file.')
+    }
+
     const credential = await createUserWithEmailAndPassword(auth, email, password)
     await updateProfile(credential.user, { displayName: name })
     setUser({ ...credential.user, displayName: name })
@@ -39,11 +48,15 @@ export function AuthProvider({ children }) {
   }
 
   function signIn({ email, password }) {
+    if (!auth) {
+      throw new Error('Firebase auth is not configured. Add the VITE_FIREBASE_* values to a .env file.')
+    }
+
     return signInWithEmailAndPassword(auth, email, password)
   }
 
   function saveProfile(details) {
-    if (!auth.currentUser) return
+    if (!auth?.currentUser) return
     const nextProfile = {
       name: details.name.trim(),
       email: details.email.trim(),
@@ -64,7 +77,7 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     saveProfile,
-    signOutUser: () => signOut(auth),
+    signOutUser: () => (auth ? signOut(auth) : Promise.resolve()),
   }), [loading, profile, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

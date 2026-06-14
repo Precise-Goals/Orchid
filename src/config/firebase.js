@@ -11,5 +11,12 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
-export const firebaseApp = initializeApp(firebaseConfig)
-export const auth = getAuth(firebaseApp)
+export const hasFirebaseConfig = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId,
+)
+
+export const firebaseApp = hasFirebaseConfig ? initializeApp(firebaseConfig) : null
+export const auth = firebaseApp ? getAuth(firebaseApp) : null
