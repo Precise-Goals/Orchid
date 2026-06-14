@@ -281,7 +281,7 @@ Generate execution plans.
 
 Sources:
 
-* GNews
+* Moneycontrol
 
 Responsibilities:
 
@@ -355,7 +355,7 @@ Approved Providers:
 
 ## News
 
-* GNews
+* Moneycontrol
 
 ## Financial Data
 
@@ -586,7 +586,7 @@ Secrets:
 
 * Gemini
 * Sarvam
-* GNews
+* Moneycontrol
 * Yahoo Finance
 * Moneycontrol
 

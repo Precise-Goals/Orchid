@@ -9,7 +9,6 @@ import { NewResearch } from '../components/research/NewResearch'
 import { agentSteps } from '../data/research'
 import { useAuth } from '../hooks/useAuth'
 import { getGeminiPlan } from '../agents/planner'
-import { fetchLiveSignals } from '../agents/researcher'
 import { synthesizeResearch } from '../agents/synthesizer'
 
 export function ResearchPage() {
@@ -39,29 +38,18 @@ export function ResearchPage() {
       const plan = await getGeminiPlan(trimmed)
       setActiveStep(1)
 
-      // Step 2: Live Signal Retrieval
-      console.log('[Orchid Intelligence] Phase 2: Signal Retrieval...')
-      const articles = await fetchLiveSignals(trimmed, plan.source_priority)
-      setActiveStep(2)
-
-      if (articles.length === 0) {
-        throw new Error('No live signals could be retrieved for this query. Please check API configuration.')
-      }
-
-      // Step 3: Synthesis
-      console.log('[Orchid Intelligence] Phase 3: Reasoning & Synthesis...')
-      const result = await synthesizeResearch(trimmed, articles)
+      // Step 2: Agentic Synthesis (Includes Google Search Tool Grounding)
+      console.log('[Orchid Intelligence] Phase 2: Live Reasoning & Signal Discovery...')
+      const result = await synthesizeResearch(trimmed, plan.source_priority)
       setActiveStep(3)
 
-      // Step 4: Final Output
+      // Step 3: Final Output
       console.log('%c[ORCHID SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
       console.log('%cQuery:', 'font-weight: bold', trimmed)
       console.log('%cStrategy:', 'font-weight: bold', plan.source_priority)
       console.log('%cThesis:', 'font-weight: bold', result.summary)
       console.log('%cFindings:', 'font-weight: bold')
       result.bullets.forEach(b => console.log(' •', b))
-      console.log('%cLive Sources:', 'font-weight: bold')
-      articles.forEach(a => console.log(` [${a.source}] ${a.title}`))
       console.log('%cConfidence:', 'color: #6f8d79; font-weight: bold', `${result.confidence}%`)
       console.log('%c---------------------------------------', 'color: #ded9ce')
 

@@ -3,7 +3,6 @@ import { FiMic, FiX } from 'react-icons/fi'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import { getGeminiPlan } from '../agents/planner'
-import { fetchLiveSignals } from '../agents/researcher'
 import { synthesizeResearch } from '../agents/synthesizer'
 
 const Spline = lazy(() => import('@splinetool/react-spline'))
@@ -92,16 +91,9 @@ export function VoicePage() {
       if (event.results[0].isFinal) {
         setVoiceState('thinking')
         try {
-          console.log('[Dual-LLM] Starting Voice RAG Pipeline...')
+          console.log('[Orchid Intelligence] Starting Voice RAG Pipeline...')
           const plan = await getGeminiPlan(current)
-          const articles = await fetchLiveSignals(current, plan.source_priority)
-          
-          if (articles.length === 0) {
-            sarvamTTS("I couldn't find any live signals for that request. Please try another query.")
-            return
-          }
-
-          const result = await synthesizeResearch(current, articles)
+          const result = await synthesizeResearch(current, plan.source_priority)
           
           // Log results to console as requested
           console.log('%c[ORCHID VOICE RESULT]', 'color: #347c83; font-weight: bold;')

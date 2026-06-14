@@ -83,17 +83,17 @@ export const languageOptions = ['English', 'Hindi', 'Marathi', 'Tamil', 'Telugu'
 export const featurePanels = [
   {
     icon: FiBookOpen,
-    title: 'Tool-first research',
-    text: 'External evidence begins the investigation instead of decorating the generated answer.',
+    title: 'Moneycontrol Reference',
+    text: 'Leverages institutional-grade financial data from Moneycontrol for deep market insights.',
   },
   {
     icon: FiActivity,
-    title: 'Agentic orchestration',
-    text: 'Intent, planning, retrieval, validation, and communication remain separate system jobs.',
+    title: 'Agentic Orchestration',
+    text: 'Dual-LLM architecture: Gemini plans while Sarvam executes the communication layer.',
   },
   {
     icon: FiGlobe,
-    title: 'Multilingual by design',
+    title: 'Multilingual by Design',
     text: 'Research meets users in the language where decisions and conversations already happen.',
   },
   {

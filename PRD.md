@@ -500,7 +500,7 @@ Create Response
 
 Provider
 
-GNews
+Moneycontrol
 
 Functions
 
@@ -604,7 +604,7 @@ SARVAM_API_KEY
 
 ---
 
-## GNews
+## Moneycontrol
 
 Purpose
 
@@ -934,7 +934,7 @@ Gemini
 
 Sarvam
 
-GNews
+Moneycontrol
 
 Finance APIs
 
