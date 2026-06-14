@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Suspense, lazy } from 'react'
 import { FiMic, FiX } from 'react-icons/fi'
 import { generateResearch } from '../data/research'
 import { useAuth } from '../hooks/useAuth'
+
+const Spline = lazy(() => import('@splinetool/react-spline'))
 
 export function VoicePage() {
   const recognitionRef = useRef(null)
   const { profile } = useAuth()
   const [voiceState, setVoiceState] = useState('idle')
-  const [lastAnswer, setLastAnswer] = useState('')
   const supportsSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window
 
   useEffect(() => {
@@ -20,7 +21,6 @@ export function VoicePage() {
   function startVoice() {
     if (!supportsSpeech) {
       setVoiceState('unsupported')
-      setLastAnswer('Speech recognition is not available in this browser.')
       return
     }
 
@@ -35,7 +35,6 @@ export function VoicePage() {
       setVoiceState('thinking')
       window.setTimeout(() => {
         const run = generateResearch(transcript, profile?.language || 'English')
-        setLastAnswer(run.summary)
         speak(run.summary)
       }, 900)
     }
@@ -52,7 +51,7 @@ export function VoicePage() {
       return
     }
     window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
+    const utterance = new SynthesisUtterance(text)
     utterance.lang = profile?.language === 'Hindi' ? 'hi-IN' : 'en-IN'
     utterance.rate = 0.95
     utterance.onstart = () => setVoiceState('speaking')
@@ -68,33 +67,41 @@ export function VoicePage() {
 
   return (
     <section className="voice-minimal-page" aria-label="Voice research">
-      <div className={`voice-model ${voiceState}`}>
-        <div className="voice-ring ring-one"></div>
-        <div className="voice-ring ring-two"></div>
-        <div className="voice-ring ring-three"></div>
-        <div className="voice-core">
-          <FiMic aria-hidden="true" />
-        </div>
+      <div className="voice-3d-container">
+        <Suspense fallback={<div className="voice-loading">Loading Orb...</div>}>
+          <Spline scene="/voice.splinecode" />
+        </Suspense>
       </div>
+      
       <div className="voice-minimal-actions">
-        <button type="button" className="voice-primary" onClick={startVoice} aria-label="Start voice research">
+        <button 
+          type="button" 
+          className={`voice-primary ${voiceState === 'listening' ? 'active' : ''}`} 
+          onClick={startVoice} 
+          aria-label="Start voice research"
+        >
           <FiMic aria-hidden="true" />
         </button>
-        <button type="button" className="voice-cancel" onClick={cancelVoice} aria-label="Cancel voice research">
+        <button 
+          type="button" 
+          className="voice-cancel" 
+          onClick={cancelVoice} 
+          aria-label="Cancel voice research"
+        >
           <FiX aria-hidden="true" />
         </button>
       </div>
-      <p className="voice-state">
-        {voiceState === 'unsupported'
-          ? lastAnswer
-          : voiceState === 'listening'
-            ? 'Listening'
-            : voiceState === 'thinking'
-              ? 'Thinking'
-              : voiceState === 'speaking'
-                ? 'Speaking'
-                : 'Ready'}
+
+      <p className="voice-state-label">
+        {voiceState === 'listening' && 'Listening...'}
+        {voiceState === 'thinking' && 'Thinking...'}
+        {voiceState === 'speaking' && 'Speaking...'}
+        {voiceState === 'idle' && 'Tap to speak'}
+        {voiceState === 'unsupported' && 'Voice not supported'}
       </p>
     </section>
   )
 }
+
+// Fallback for missing SpeechSynthesisUtterance in some environments during SSR/Testing
+const SynthesisUtterance = typeof window !== 'undefined' ? window.SpeechSynthesisUtterance : class {}

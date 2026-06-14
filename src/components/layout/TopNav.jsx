@@ -7,14 +7,14 @@ export function TopNav({ theme, onThemeChange }) {
 
   return (
     <header className="top-nav">
-      <NavLink to="/" className="brand" aria-label="ORCHIDE home">
+      <NavLink to="/" className="brand" aria-label="CODEX home">
         <img src="/logo.png" alt="" />
-        <span>ORCHIDE</span>
+        <span>CODEX</span>
       </NavLink>
       <nav aria-label="Primary navigation">
         <NavLink to="/">About</NavLink>
         <NavLink to="/research">Research</NavLink>
-        <NavLink to="/voice">Voice</NavLink>
+        <NavLink to="/voice">Orchid</NavLink>
         <NavLink to="/settings">Settings</NavLink>
         <NavLink to="/profile">Profile</NavLink>
       </nav>

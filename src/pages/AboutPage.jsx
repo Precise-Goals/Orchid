@@ -1,61 +1,65 @@
 import { useNavigate } from 'react-router-dom'
-import { FiSearch, FiSend } from 'react-icons/fi'
-import { FeaturePanel } from '../components/ui/FeaturePanel'
-import { ResearchMap } from '../components/research/ResearchMap'
-import { featurePanels, marketSignals, samplePrompts } from '../data/research'
+import { FiSearch, FiSend, FiCpu, FiShield, FiZap, FiLayout } from 'react-icons/fi'
 import { useState } from 'react'
+import { samplePrompts } from '../data/research'
 
 export function AboutPage() {
   const navigate = useNavigate()
   const [prompt, setPrompt] = useState(samplePrompts[0])
 
   return (
-    <section className="about-page">
-      <div className="hero-band">
-        <div className="hero-copy">
-          <p className="eyebrow">Agentic market intelligence</p>
-          <h1>Research that plans before it speaks.</h1>
-          <p className="hero-text">
-            ORCHIDE is a calm, source-backed research workspace for market discovery,
-            financial intelligence, multilingual response, and voice-native investigation.
-          </p>
-          <div className="prompt-launcher" role="search">
-            <FiSearch aria-hidden="true" />
-            <input
-              value={prompt}
-              onChange={(event) => setPrompt(event.target.value)}
-              aria-label="Research question"
-            />
-            <button type="button" onClick={() => navigate('/research', { state: { prompt } })}>
-              <FiSend aria-hidden="true" />
-              Start
-            </button>
-          </div>
-          <div className="prompt-chips" aria-label="Example prompts">
-            {samplePrompts.map((item) => (
-              <button type="button" key={item} onClick={() => setPrompt(item)}>
-                {item}
-              </button>
-            ))}
-          </div>
+    <section className="about-page-refined">
+      <div className="about-hero">
+        <p className="eyebrow">Codex Intelligence</p>
+        <h1>The research engine for the agentic age.</h1>
+        <p className="about-subtext">
+          Codex is a calm, source-backed workspace designed for deep market discovery, 
+          multimodal analysis, and institutional-grade reasoning.
+        </p>
+        
+        <div className="about-launcher">
+          <FiSearch />
+          <input 
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="What would you like to research?"
+          />
+          <button onClick={() => navigate('/research', { state: { prompt } })}>
+            <FiSend /> Start
+          </button>
         </div>
-        <ResearchMap />
       </div>
 
-      <section className="metrics-row" aria-label="System signals">
-        {marketSignals.map((signal) => (
-          <div className="metric" key={signal.label}>
-            <span>{signal.label}</span>
-            <strong>{signal.value}</strong>
+      <div className="bento-grid">
+        <div className="bento-item tall crail-bg">
+          <FiZap />
+          <h3>Agentic Planning</h3>
+          <p>Every investigation begins with a strategic plan, decomposing complex queries into executable steps.</p>
+        </div>
+        <div className="bento-item wide surface-bg">
+          <div className="bento-content">
+            <FiCpu />
+            <div>
+              <h3>Multimodal Architecture</h3>
+              <p>Simultaneous processing of text, market data, and voice signals for a comprehensive research view.</p>
+            </div>
           </div>
-        ))}
-      </section>
+        </div>
+        <div className="bento-item surface-bg">
+          <FiShield />
+          <h3>Source Grounding</h3>
+          <p>Strict data provenance from GNews, YFinance, and Moneycontrol. No hallucinations, only evidence.</p>
+        </div>
+        <div className="bento-item surface-bg">
+          <FiLayout />
+          <h3>Minimal Design</h3>
+          <p>A quiet, focused interface that puts the research first, inspired by the best of Perplexity and Claude.</p>
+        </div>
+      </div>
 
-      <section className="principle-grid">
-        {featurePanels.map((panel) => (
-          <FeaturePanel key={panel.title} {...panel} />
-        ))}
-      </section>
+      <footer className="about-footer">
+        <p>© 2026 Codex Research · Built for the agentic future.</p>
+      </footer>
     </section>
   )
 }

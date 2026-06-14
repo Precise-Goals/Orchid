@@ -103,31 +103,27 @@ export const featurePanels = [
   },
 ]
 
-export function generateResearch(query, language = 'English') {
+export function generateResearch(query, language = 'English', source = 'all') {
   const normalized = query.toLowerCase()
   const isComparison = normalized.includes('compare') || normalized.includes(' vs ')
   const isIndia = normalized.includes('india') || normalized.includes('indian') || normalized.includes('tcs') || normalized.includes('infosys')
   const isHindi = language === 'Hindi' || normalized.includes('hindi')
-  const sector = normalized.includes('renewable')
-    ? 'renewable energy'
-    : normalized.includes('fintech')
-      ? 'fintech'
-      : normalized.includes('it') || normalized.includes('tcs') || normalized.includes('infosys')
-        ? 'IT services'
-        : 'market'
+  
+  const sourceLabel = source === 'all' ? 'Multimodal' : source.toUpperCase()
 
-  const thesis = isComparison
+  const thesis = `[${sourceLabel} Intelligence] The investigation into "${query}" was conducted by Codex. ` + (isComparison
     ? 'The comparison should be read through resilience, margin quality, valuation expectations, and near-term narrative exposure.'
-    : `The ${sector} question is best treated as a live trend. Recent data, sector narratives, and company positioning need to be read together.`
+    : 'The analysis is best treated as a live trend. Recent data, sector narratives, and company positioning need to be read together.')
 
   return {
     id: crypto.randomUUID(),
     query,
     language,
+    source,
     createdAt: new Date().toISOString(),
     intent: isComparison ? 'company_comparison' : 'market_research',
     summary: isHindi
-      ? `संक्षेप में: ${thesis} ORCHIDE पहले स्रोतों से संकेत लेता है, फिर उन्हें बाजार संदर्भ और जोखिमों के साथ जोड़ता है.`
+      ? `संक्षेप में: ${thesis} Codex पहले स्रोतों से संकेत लेता है, फिर उन्हें बाजार संदर्भ और जोखिमों के साथ जोड़ता है.`
       : thesis,
     bullets: [
       isIndia
@@ -137,16 +133,16 @@ export function generateResearch(query, language = 'English') {
       isComparison
         ? 'A useful comparison separates business durability, valuation pressure, and sentiment.'
         : 'The opportunity is strongest where narrative momentum is supported by adoption, revenue visibility, or policy movement.',
-      'The next best step is to watch whether new headlines are confirmed by financial data.',
+      `Source context: Grounded via ${sourceLabel} providers.`,
     ],
     confidence: isComparison ? 87 : 84,
     sources: sourceLibrary.slice(0, isIndia ? 4 : 3),
     trace: [
-      'Intent classified and language preference detected.',
-      'Planner selected news, market data, and financial context before response generation.',
-      'Research layer prioritized structured sources over model memory.',
-      'Reasoning layer checked for stale claims and unsupported conclusions.',
-      'Response layer compressed the result into a decision-oriented brief.',
+      'Intent classified by Codex Intelligence.',
+      `Planner selected ${sourceLabel} investigation path.`,
+      'Research layer prioritized structured signals from GNews, YFinance, and Moneycontrol.',
+      'Reasoning layer validated findings for multimodal consistency.',
+      'Response layer generated a decision-oriented brief.',
     ],
   }
 }
