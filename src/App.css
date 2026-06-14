@@ -275,7 +275,12 @@
   background: var(--line);
   cursor: not-allowed;
 }
-
+.brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+}
 .running-indicator {
   display: flex;
   align-items: center;
@@ -1204,7 +1209,7 @@ textarea {
   font-size: 3.5rem;
   font-weight: 800;
   color: var(--white);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .profile-info h1 {
@@ -1248,7 +1253,8 @@ textarea {
   color: var(--ink);
 }
 
-.details-list, .settings-list {
+.details-list,
+.settings-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1315,7 +1321,7 @@ textarea {
 .segmented-control button.active {
   background: var(--surface-strong);
   color: var(--ink);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .security-note {
@@ -1323,7 +1329,8 @@ textarea {
   line-height: 1.6;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 12px 24px;
   border-radius: 12px;
   font-weight: 600;
@@ -1367,7 +1374,7 @@ textarea {
   color: var(--ink);
   font-size: 1.1rem;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 800px) {
@@ -1375,11 +1382,11 @@ textarea {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .account-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .account-card.full-width {
     grid-column: span 1;
   }
@@ -1474,5 +1481,5 @@ section.voice-minimal-page {
   gap: 0;
 }
 p.voice-state-label {
-    display: none;
+  display: none;
 }
