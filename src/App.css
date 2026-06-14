@@ -276,11 +276,22 @@
   cursor: not-allowed;
 }
 
-.brand img {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-  border-radius: 8px;
+.running-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  margin-top: 24px;
+}
+
+.running-indicator p {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-weight: 500;
+  animation: pulse 2s infinite ease-in-out;
 }
 
 .top-nav nav {

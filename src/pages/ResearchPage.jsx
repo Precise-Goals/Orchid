@@ -36,9 +36,24 @@ export function ResearchPage() {
 
     window.setTimeout(() => {
       window.clearInterval(timer)
-      setActiveRun(generateResearch(trimmed, language, source))
+      const run = generateResearch(trimmed, language, source)
+      setActiveRun(run)
       setIsRunning(false)
       setActiveStep(agentSteps.length - 1)
+      
+      // Redirect all output to console instead of UI
+      console.log('%c[CODEX RESEARCH RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
+      console.log('%cQuery:', 'font-weight: bold', run.query)
+      console.log('%cIntent:', 'font-weight: bold', run.intent)
+      console.log('%cSummary:', 'font-weight: bold', run.summary)
+      console.log('%cFindings:', 'font-weight: bold')
+      run.bullets.forEach(b => console.log(' -', b))
+      console.log('%cSources:', 'font-weight: bold')
+      run.sources.forEach(s => console.log(` [${s.type}] ${s.title} (${s.confidence}%)`))
+      console.log('%cReasoning Trace:', 'font-weight: bold')
+      run.trace.forEach((t, i) => console.log(` ${i + 1}. ${t}`))
+      console.log('%cConfidence Score:', 'color: #6f8d79; font-weight: bold', `${run.confidence}%`)
+      console.log('%c---------------------------------------', 'color: #ded9ce')
     }, 2100)
   }, [input, isRunning, language])
 
@@ -63,7 +78,12 @@ export function ResearchPage() {
       }} />
 
       <AgentRail activeStep={activeStep} isRunning={isRunning} />
-      {activeRun ? <ResearchResult run={activeRun} /> : <EmptyResearch />}
+      
+      {isRunning && (
+        <div className="running-indicator">
+          <p>Codex is investigating... check browser console for live results.</p>
+        </div>
+      )}
     </section>
   )
 }
