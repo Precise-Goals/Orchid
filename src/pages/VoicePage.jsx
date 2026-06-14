@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, Suspense, lazy } from 'react'
-import { FiMic, FiX, FiVolume2 } from 'react-icons/fi'
+import { FiMic, FiX } from 'react-icons/fi'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateResearch } from '../data/research'
 import { useAuth } from '../hooks/useAuth'
+import { getGeminiPlan } from '../agents/planner'
+import { fetchLiveSignals } from '../agents/researcher'
+import { synthesizeResearch } from '../agents/synthesizer'
 
 const Spline = lazy(() => import('@splinetool/react-spline'))
 
@@ -21,8 +23,7 @@ export function VoicePage() {
   }, [])
 
   async function sarvamTTS(text) {
-    console.log('[Sarvam AI] Requesting synthesis for text:', text)
-    console.log('[Sarvam AI] Using voice model: Shubh (Hindi/Multilingual)')
+    console.log('[Sarvam AI] Requesting synthesis (Shubh) for institutional brief...')
     
     try {
       const response = await fetch('https://api.sarvam.ai/text-to-speech', {
@@ -48,24 +49,20 @@ export function VoicePage() {
         audio.onplay = () => setVoiceState('speaking')
         audio.onended = () => setVoiceState('idle')
         await audio.play()
-        console.log('[Sarvam AI] Synthesis successful, playing audio.')
       } else {
         const errorData = await response.json()
-        console.error('[Sarvam AI] Error Response:', errorData)
-        throw new Error(`Sarvam AI synthesis failed: ${errorData.message || response.statusText}`)
+        throw new Error(`TTS failed: ${errorData.message}`)
       }
     } catch (error) {
-      console.error('[Sarvam AI] TTS Error:', error)
+      console.error('[Sarvam AI] Error:', error)
       fallbackTTS(text)
     }
   }
 
   function fallbackTTS(text) {
-    console.log('[Codex] Falling back to Web Speech API for synthesis.')
     window.speechSynthesis.cancel()
     const utterance = new SynthesisUtterance(text)
     utterance.lang = profile?.language === 'Hindi' ? 'hi-IN' : 'en-IN'
-    utterance.rate = 0.95
     utterance.onstart = () => setVoiceState('speaking')
     utterance.onend = () => setVoiceState('idle')
     window.speechSynthesis.speak(utterance)
@@ -88,13 +85,34 @@ export function VoicePage() {
       setTranscript('')
     }
 
-    recognition.onresult = (event) => {
+    recognition.onresult = async (event) => {
       const current = event.results[0][0].transcript
       setTranscript(current)
+      
       if (event.results[0].isFinal) {
         setVoiceState('thinking')
-        const run = generateResearch(current, profile?.language || 'English')
-        sarvamTTS(run.summary)
+        try {
+          console.log('[Dual-LLM] Starting Voice RAG Pipeline...')
+          const plan = await getGeminiPlan(current)
+          const articles = await fetchLiveSignals(current, plan.source_priority)
+          
+          if (articles.length === 0) {
+            sarvamTTS("I couldn't find any live signals for that request. Please try another query.")
+            return
+          }
+
+          const result = await synthesizeResearch(current, articles)
+          
+          // Log results to console as requested
+          console.log('%c[ORCHID VOICE RESULT]', 'color: #347c83; font-weight: bold;')
+          console.log('Query:', current)
+          console.log('Synthesis:', result.summary)
+          
+          sarvamTTS(result.summary)
+        } catch (err) {
+          console.error('[Orchid Error]:', err)
+          sarvamTTS("An internal error occurred while processing your request.")
+        }
       }
     }
 

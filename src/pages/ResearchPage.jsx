@@ -6,9 +6,11 @@ import { ResearchHero } from '../components/research/ResearchHero'
 import { ResearchInput } from '../components/research/ResearchInput'
 import { ResearchChips } from '../components/research/ResearchChips'
 import { NewResearch } from '../components/research/NewResearch'
-import { agentSteps, generateResearch } from '../data/research'
+import { agentSteps } from '../data/research'
 import { useAuth } from '../hooks/useAuth'
 import { getGeminiPlan } from '../agents/planner'
+import { fetchLiveSignals } from '../agents/researcher'
+import { synthesizeResearch } from '../agents/synthesizer'
 
 export function ResearchPage() {
   const location = useLocation()
@@ -32,36 +34,42 @@ export function ResearchPage() {
     setShowNew(false)
 
     try {
-      // Step 1: Gemini Planner (The Thinker)
-      console.log('[Dual-LLM] Phase 1: Gemini Planning...')
+      // Step 1: Gemini Planner
+      console.log('[Dual-LLM] Phase 1: Planning...')
       const plan = await getGeminiPlan(trimmed)
-      console.log('[Gemini Plan]:', plan)
       setActiveStep(1)
 
-      // Step 2: Agent Execution
-      console.log('[Dual-LLM] Phase 2: Agent Execution & Signal Collection...')
-      const timer = window.setInterval(() => {
-        setActiveStep((step) => Math.min(step + 1, agentSteps.length - 1))
-      }, 500)
+      // Step 2: Live Signal Retrieval
+      console.log('[Dual-LLM] Phase 2: Signal Retrieval...')
+      const articles = await fetchLiveSignals(trimmed, plan.source_priority)
+      setActiveStep(2)
 
-      window.setTimeout(() => {
-        window.clearInterval(timer)
-        const run = generateResearch(trimmed, language, source)
-        
-        // Log to console only as requested
-        console.log('%c[CODEX SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
-        console.log('%cQuery:', 'font-weight: bold', run.query)
-        console.log('%cPlan Strategy:', 'font-weight: bold', plan.source_priority)
-        console.log('%cSummary:', 'font-weight: bold', run.summary)
-        console.log('%cTrace:', 'font-weight: bold')
-        run.trace.forEach((t, i) => console.log(` ${i + 1}. ${t}`))
-        
-        setIsRunning(false)
-        setActiveStep(agentSteps.length - 1)
-      }, 2000)
+      if (articles.length === 0) {
+        throw new Error('No live signals could be retrieved for this query.')
+      }
+
+      // Step 3: Synthesis
+      console.log('[Dual-LLM] Phase 3: Reasoning & Synthesis...')
+      const result = await synthesizeResearch(trimmed, articles)
+      setActiveStep(3)
+
+      // Step 4: Final Output
+      console.log('%c[CODEX SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
+      console.log('%cQuery:', 'font-weight: bold', trimmed)
+      console.log('%cStrategy:', 'font-weight: bold', plan.source_priority)
+      console.log('%cThesis:', 'font-weight: bold', result.summary)
+      console.log('%cFindings:', 'font-weight: bold')
+      result.bullets.forEach(b => console.log(' •', b))
+      console.log('%cLive Sources:', 'font-weight: bold')
+      articles.forEach(a => console.log(` [${a.source}] ${a.title}`))
+      console.log('%cConfidence:', 'color: #6f8d79; font-weight: bold', `${result.confidence}%`)
+      console.log('%c---------------------------------------', 'color: #ded9ce')
+
+      setIsRunning(false)
+      setActiveStep(4)
     } catch (err) {
       console.error('[System Error]:', err)
-      setError('Investigation failed. Check console for debug traces.')
+      setError(err.message || 'Investigation failed. Check console.')
       setIsRunning(false)
     }
   }, [input, isRunning, language])
