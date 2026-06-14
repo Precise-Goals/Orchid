@@ -1462,3 +1462,6 @@ textarea {
 section.voice-minimal-page {
   gap: 0;
 }
+p.voice-state-label {
+    display: none;
+}

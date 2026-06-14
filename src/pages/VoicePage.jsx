@@ -32,27 +32,27 @@ export function VoicePage() {
           'api-subscription-key': import.meta.env.VITE_SARVAM_API_KEY
         },
         body: JSON.stringify({
-          inputs: [text],
+          text: text,
           target_language_code: profile?.language === 'Hindi' ? 'hi-IN' : 'en-IN',
-          speaker: 'shubh',
-          pitch: 0,
-          pace: 1.0,
-          loudness: 1.5,
-          speech_sample_rate: 22050,
-          enable_punctuation_breaks: true,
-          model: 'bulbul:v1'
+          speaker: 'shubh', 
+          model: 'bulbul:v3',
+          speech_sample_rate: 16000,
+          enable_preprocessing: true,
+          audio_format: 'mp3'
         })
       })
 
       if (response.ok) {
         const data = await response.json()
-        const audio = new Audio(`data:audio/wav;base64,${data.audios[0]}`)
+        const audio = new Audio(`data:audio/mpeg;base64,${data.audios[0]}`)
         audio.onplay = () => setVoiceState('speaking')
         audio.onended = () => setVoiceState('idle')
         await audio.play()
         console.log('[Sarvam AI] Synthesis successful, playing audio.')
       } else {
-        throw new Error('Sarvam AI synthesis failed')
+        const errorData = await response.json()
+        console.error('[Sarvam AI] Error Response:', errorData)
+        throw new Error(`Sarvam AI synthesis failed: ${errorData.message || response.statusText}`)
       }
     } catch (error) {
       console.error('[Sarvam AI] TTS Error:', error)
