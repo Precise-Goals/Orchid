@@ -18,7 +18,7 @@ export const ResearchInput = memo(function ResearchInput({ input, setInput, isRu
       />
       <button type="submit" disabled={isRunning || !input.trim()}>
         <FiSend aria-hidden="true" />
-        Run
+        {isRunning ? 'Running' : 'Run'}
       </button>
     </form>
   )

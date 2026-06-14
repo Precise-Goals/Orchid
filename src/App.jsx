@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { AuthProvider } from './components/auth/AuthProvider'
 import { useTheme } from './hooks/useTheme'
 import { TopNav } from './components/layout/TopNav'

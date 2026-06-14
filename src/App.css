@@ -713,6 +713,16 @@ textarea {
   color: var(--muted);
 }
 
+.running-research > svg {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .research-result {
   display: grid;
   gap: 20px;
@@ -780,6 +790,111 @@ textarea {
   height: 7px;
   border-radius: 50%;
   background: var(--crail);
+}
+
+.research-section {
+  display: grid;
+  gap: 12px;
+}
+
+.insight-grid,
+.brief-grid,
+.decision-grid,
+.snapshot-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.insight-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.insight-card,
+.brief-card,
+.snapshot-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+}
+
+.insight-card {
+  display: grid;
+  gap: 10px;
+  min-height: 132px;
+  padding: 16px;
+}
+
+.insight-card span,
+.snapshot-card span {
+  color: var(--crail);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.insight-card p,
+.brief-card p,
+.check-row {
+  color: var(--muted);
+}
+
+.snapshot-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.snapshot-card {
+  display: grid;
+  gap: 4px;
+  min-height: 84px;
+  padding: 14px;
+}
+
+.snapshot-card strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.brief-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.brief-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+
+.brief-card h4 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+}
+
+.decision-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compact-panel {
+  align-content: start;
+}
+
+.check-row {
+  position: relative;
+  padding-left: 22px;
+}
+
+.check-row::before {
+  content: "";
+  position: absolute;
+  top: 0.7em;
+  left: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sage);
 }
 
 .result-grid {
@@ -1391,6 +1506,16 @@ textarea {
   .result-grid {
     grid-template-columns: 1fr;
   }
+
+  .insight-grid,
+  .brief-grid,
+  .decision-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .snapshot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -1436,7 +1561,8 @@ textarea {
   .principle-grid,
   .agent-rail,
   .settings-grid,
-  .profile-grid {
+  .profile-grid,
+  .snapshot-grid {
     grid-template-columns: 1fr;
   }
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, Suspense, lazy } from 'react'
-import { FiMic, FiX, FiVolume2 } from 'react-icons/fi'
+import { FiMic, FiX } from 'react-icons/fi'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateResearch } from '../data/research'
 import { useAuth } from '../hooks/useAuth'

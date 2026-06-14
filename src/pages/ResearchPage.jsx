@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { FiBarChart2 } from 'react-icons/fi'
+import { FiBarChart2, FiLoader } from 'react-icons/fi'
 import { AgentRail } from '../components/research/AgentRail'
 import { ResearchResult } from '../components/research/ResearchResult'
 import { ResearchHero } from '../components/research/ResearchHero'
@@ -14,6 +14,9 @@ export function ResearchPage() {
   const location = useLocation()
   const { profile } = useAuth()
   const locationPrompt = location.state?.prompt
+  const resultRef = useRef(null)
+  const intervalRef = useRef(null)
+  const timeoutRef = useRef(null)
   const [input, setInput] = useState(locationPrompt || '')
   const [language, setLanguage] = useState(profile?.language || 'English')
   const [isRunning, setIsRunning] = useState(false)
@@ -21,26 +24,48 @@ export function ResearchPage() {
   const [activeStep, setActiveStep] = useState(0)
   const [showNew, setShowNew] = useState(!locationPrompt)
 
+  const clearRunTimers = useCallback(() => {
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  useEffect(() => clearRunTimers, [clearRunTimers])
+
+  useEffect(() => {
+    if (!activeRun) return
+    window.requestAnimationFrame(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [activeRun])
+
   const runResearch = useCallback((query = input, source = 'all') => {
     const trimmed = query.trim()
     if (!trimmed || isRunning) return
 
+    clearRunTimers()
     setInput(trimmed)
     setIsRunning(true)
     setActiveStep(0)
+    setActiveRun(null)
     setShowNew(false)
 
-    const timer = window.setInterval(() => {
+    intervalRef.current = window.setInterval(() => {
       setActiveStep((step) => Math.min(step + 1, agentSteps.length - 1))
     }, 380)
 
-    window.setTimeout(() => {
-      window.clearInterval(timer)
+    timeoutRef.current = window.setTimeout(() => {
+      clearRunTimers()
       setActiveRun(generateResearch(trimmed, language, source))
       setIsRunning(false)
       setActiveStep(agentSteps.length - 1)
     }, 2100)
-  }, [input, isRunning, language])
+  }, [clearRunTimers, input, isRunning, language])
 
   if (showNew) {
     return <NewResearch onStart={runResearch} />
@@ -63,8 +88,20 @@ export function ResearchPage() {
       }} />
 
       <AgentRail activeStep={activeStep} isRunning={isRunning} />
-      {activeRun ? <ResearchResult run={activeRun} /> : <EmptyResearch />}
+      <div ref={resultRef}>
+        {isRunning ? <RunningResearch query={input} /> : activeRun ? <ResearchResult run={activeRun} /> : <EmptyResearch />}
+      </div>
     </section>
+  )
+}
+
+function RunningResearch({ query }) {
+  return (
+    <div className="empty-research running-research" aria-live="polite">
+      <FiLoader aria-hidden="true" />
+      <h2>Researching "{query}"</h2>
+      <p>ORCHIDE is planning the query, collecting signals, validating sources, and shaping the answer.</p>
+    </div>
   )
 }
 

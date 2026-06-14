@@ -1,18 +1,17 @@
-import { memo, useState, useEffect } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { FiSearch, FiGlobe, FiTrendingUp, FiBook } from 'react-icons/fi'
 import { useAuth } from '../../hooks/useAuth'
 
 export const NewResearch = memo(function NewResearch({ onStart }) {
   const { profile } = useAuth()
-  const [greeting, setGreeting] = useState('')
   const [input, setInput] = useState('')
   const [source, setSource] = useState('all')
 
-  useEffect(() => {
+  const greeting = useMemo(() => {
     const hour = new Date().getHours()
-    if (hour < 12) setGreeting('Good morning')
-    else if (hour < 17) setGreeting('Good afternoon')
-    else setGreeting('Good evening')
+    if (hour < 12) return 'Good morning'
+    if (hour < 17) return 'Good afternoon'
+    return 'Good evening'
   }, [])
 
   const handleSubmit = (e) => {

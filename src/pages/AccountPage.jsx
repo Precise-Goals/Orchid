@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { 
-  FiMail, FiPhone, FiUser, FiGlobe, FiMoon, FiSun, FiSettings, 
+  FiUser, FiMoon, FiSun, FiSettings, 
   FiShield, FiLogOut, FiEdit2 
 } from 'react-icons/fi'
 import { motion } from 'framer-motion'
@@ -10,7 +9,6 @@ import { languageOptions } from '../data/research'
 
 export function AccountPage({ theme, onThemeChange }) {
   const { user, profile, signOutUser } = useAuth()
-  const [isEditing, setIsEditing] = useState(false)
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
