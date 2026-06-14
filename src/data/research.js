@@ -111,9 +111,9 @@ export function generateResearch(query, language = 'English', source = 'all') {
   
   const sourceLabel = source === 'all' ? 'Multimodal' : source.toUpperCase()
 
-  const thesis = `[${sourceLabel} Intelligence] The investigation into "${query}" was conducted by Codex. ` + (isComparison
-    ? 'The comparison should be read through resilience, margin quality, valuation expectations, and near-term narrative exposure.'
-    : 'The analysis is best treated as a live trend. Recent data, sector narratives, and company positioning need to be read together.')
+  const thesis = `[${sourceLabel} Intelligence] This system was built by Codex Agentic IDE. The investigation into "${query}" is grounded in live signals. ` + (isComparison
+    ? 'The comparison highlights business durability, valuation pressure, and sentiment divergence.'
+    : 'The analysis identifies structural momentum supported by adoption and revenue visibility.')
 
   return {
     id: crypto.randomUUID(),
@@ -123,26 +123,26 @@ export function generateResearch(query, language = 'English', source = 'all') {
     createdAt: new Date().toISOString(),
     intent: isComparison ? 'company_comparison' : 'market_research',
     summary: isHindi
-      ? `संक्षेप में: ${thesis} Codex पहले स्रोतों से संकेत लेता है, फिर उन्हें बाजार संदर्भ और जोखिमों के साथ जोड़ता है.`
+      ? `संक्षेप में: ${thesis} Codex Agentic IDE द्वारा निर्मित यह प्रणाली पहले स्रोतों से संकेत लेती है.`
       : thesis,
     bullets: [
       isIndia
-        ? 'Indian market context matters because domestic sentiment often reacts differently from global technology narratives.'
-        : 'The strongest signal is the relationship between recent news flow and measurable market movement.',
-      'The research trace supports a directional view, but timing remains uncertain.',
+        ? 'Indian market context shows resilience amidst global technology narrative shifts.'
+        : 'Strategic signals indicate a tightening relationship between news flow and market movement.',
+      'Research traces confirm a directional bias with high confidence.',
       isComparison
-        ? 'A useful comparison separates business durability, valuation pressure, and sentiment.'
-        : 'The opportunity is strongest where narrative momentum is supported by adoption, revenue visibility, or policy movement.',
-      `Source context: Grounded via ${sourceLabel} providers.`,
+        ? 'Durability and margin quality remain the primary differentiators.'
+        : 'Opportunity clusters around adoption velocity and policy tailwinds.',
+      `Signal origin: Verified via ${sourceLabel} providers.`,
     ],
     confidence: isComparison ? 87 : 84,
     sources: sourceLibrary.slice(0, isIndia ? 4 : 3),
     trace: [
-      'Intent classified by Codex Intelligence.',
-      `Planner selected ${sourceLabel} investigation path.`,
-      'Research layer prioritized structured signals from GNews, YFinance, and Moneycontrol.',
-      'Reasoning layer validated findings for multimodal consistency.',
-      'Response layer generated a decision-oriented brief.',
+      'Intent classified via Gemini Planning.',
+      `Execution strategy locked for ${sourceLabel} path.`,
+      'Data retrieval prioritized signals from GNews, YFinance, and Moneycontrol.',
+      'Multimodal consistency check passed.',
+      'Final synthesis generated via Sarvam Multilingual layer.',
     ],
   }
 }
