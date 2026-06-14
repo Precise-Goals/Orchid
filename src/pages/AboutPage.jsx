@@ -36,10 +36,11 @@ export function AboutPage() {
           </button>
         </div>
       </div>
-    <div className="orchid">
-      <h1>Orchid.</h1>
-      <img src="" alt="" />
-    </div>
+      <div className="orchid">
+        <h1>Orchid.</h1>
+        <p>A revolutionary approach to research and analysis.</p>
+        <img src="/vec.jpg" alt="" />
+      </div>
       <div className="bento-grid">
         <div className="bento-item tall crail-bg">
           <img
@@ -47,7 +48,7 @@ export function AboutPage() {
             alt="Agent"
             style={{
               width: "100%",
-              borderRadius:"5rem"
+              borderRadius: "5rem",
             }}
           />
           <h3>Agentic Planning</h3>

@@ -34,27 +34,27 @@ export function ResearchPage() {
     setShowNew(false)
 
     try {
-      // Step 1: Gemini Planner
-      console.log('[Dual-LLM] Phase 1: Planning...')
+      // Step 1: Institutional Planner
+      console.log('[Orchid Intelligence] Phase 1: Planning...')
       const plan = await getGeminiPlan(trimmed)
       setActiveStep(1)
 
       // Step 2: Live Signal Retrieval
-      console.log('[Dual-LLM] Phase 2: Signal Retrieval...')
+      console.log('[Orchid Intelligence] Phase 2: Signal Retrieval...')
       const articles = await fetchLiveSignals(trimmed, plan.source_priority)
       setActiveStep(2)
 
       if (articles.length === 0) {
-        throw new Error('No live signals could be retrieved for this query.')
+        throw new Error('No live signals could be retrieved for this query. Please check API configuration.')
       }
 
       // Step 3: Synthesis
-      console.log('[Dual-LLM] Phase 3: Reasoning & Synthesis...')
+      console.log('[Orchid Intelligence] Phase 3: Reasoning & Synthesis...')
       const result = await synthesizeResearch(trimmed, articles)
       setActiveStep(3)
 
       // Step 4: Final Output
-      console.log('%c[CODEX SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
+      console.log('%c[ORCHID SYSTEM RESULT]', 'color: #c15f3c; font-weight: bold; font-size: 14px;')
       console.log('%cQuery:', 'font-weight: bold', trimmed)
       console.log('%cStrategy:', 'font-weight: bold', plan.source_priority)
       console.log('%cThesis:', 'font-weight: bold', result.summary)
@@ -69,7 +69,7 @@ export function ResearchPage() {
       setActiveStep(4)
     } catch (err) {
       console.error('[System Error]:', err)
-      setError(err.message || 'Investigation failed. Check console.')
+      setError(err.message || 'Investigation failed. Check console for debug traces.')
       setIsRunning(false)
     }
   }, [input, isRunning, language])
@@ -89,11 +89,18 @@ export function ResearchPage() {
         onSubmit={runResearch} 
       />
 
-      {error && (
-        <div className="error-banner">
-          <FiAlertCircle /> {error}
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="error-banner"
+          >
+            <FiAlertCircle /> <span>{error}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ResearchChips onSelect={(item) => {
         setInput(item)
@@ -104,7 +111,7 @@ export function ResearchPage() {
       
       {isRunning && (
         <div className="running-indicator">
-          <p>Codex Agentic IDE is investigating... check console for multimodal signals.</p>
+          <p>Orchid Intelligence System is investigating... check console for multimodal signals.</p>
         </div>
       )}
     </section>

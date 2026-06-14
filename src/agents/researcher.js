@@ -1,41 +1,44 @@
 export async function fetchLiveSignals(query, sourcePriority) {
   const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-  let searchQuery = query;
+  
+  // Clean query: remove special chars and limit length to avoid 400 errors
+  let cleanQuery = query.replace(/[?]/g, "").slice(0, 100);
+  let searchQuery = cleanQuery;
 
-  // Simulate source-specific searches using domain filtering
   if (sourcePriority === 'YFinance') {
-    searchQuery = `${query} site:finance.yahoo.com`;
+    searchQuery = `"${cleanQuery}" site:finance.yahoo.com`;
   } else if (sourcePriority === 'Moneycontrol') {
-    searchQuery = `${query} site:moneycontrol.com`;
+    searchQuery = `"${cleanQuery}" site:moneycontrol.com`;
   }
 
-  console.log(`[Researcher] Fetching live signals for: "${searchQuery}"`);
+  console.log(`[Signal Retrieval] Searching for: "${searchQuery}"`);
 
   try {
-    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&token=${apiKey}&lang=en&max=5`;
+    // GNews v4 uses 'apikey' as the standard parameter
+    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&apikey=${apiKey}&lang=en&max=5`;
     const response = await fetch(url);
     
     if (!response.ok) {
-      throw new Error(`GNews API error: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      console.error("[Signal Retrieval] API Error Response:", errorData);
+      throw new Error(`Signal retrieval failed: ${response.status} ${errorData.errors?.[0] || ""}`);
     }
 
     const data = await response.json();
     
     if (!data.articles || data.articles.length === 0) {
-      console.warn(`[Researcher] No live articles found for "${searchQuery}".`);
+      console.warn(`[Signal Retrieval] No live signals found for "${searchQuery}".`);
       return [];
     }
 
     return data.articles.map(article => ({
       title: article.title,
       description: article.description,
-      content: article.content,
       source: article.source.name,
-      url: article.url,
-      publishedAt: article.publishedAt
+      url: article.url
     }));
   } catch (error) {
-    console.error("[Researcher] Fetch Error:", error);
+    console.error("[Signal Retrieval] Critical Error:", error);
     return [];
   }
 }

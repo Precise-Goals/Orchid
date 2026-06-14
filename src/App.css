@@ -1174,9 +1174,23 @@ textarea {
   text-align: left;
 }
 
-.form-error {
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 20%, transparent);
+  border-radius: var(--radius);
   color: var(--danger);
-  font-size: 0.9rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.error-banner svg {
+  flex: 0 0 auto;
 }
 
 .account-page {
@@ -1482,4 +1496,43 @@ section.voice-minimal-page {
 }
 p.voice-state-label {
   display: none;
+}
+header.top-nav {
+  height: 0;
+  min-height: none;
+  padding: 2.5% 2%;
+  margin: 1% 18%;
+  filter: drop-shadow(0px 9px 12px #ffa50045);
+  border-radius: 4rem;
+}
+.orchid {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  margin: 10% 0;
+  border-radius: 11rem;
+}
+
+.orchid img {
+  width: 100%;
+}
+
+.orchid h1 {
+  position: absolute;
+  top: 50%;
+  bottom: 50%;
+  transform: translate(50%, 50%);
+  font-size: 8rem;
+  color: white;
+  filter: drop-shadow(0px 6px 32px #00000089);
+}
+.orchid p {
+  position: absolute;
+  top: 72%;
+  left: 51%;
+  transform: translate(-50%, -50%);
+  font-size: 8rem;
+  color: white;
+  font-size: 20px;
+  filter: drop-shadow(0px 6px 32px #00000089);
 }
