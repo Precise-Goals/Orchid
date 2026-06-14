@@ -100,32 +100,7 @@ Optional looping background audio track (controlled via nav speaker toggle). Aut
 
 ![System Architecture](./readme-architecture.png)
 
-### High-Level Flow
-
-```
-User
- ↓
-Frontend (React + Vite + Bun)
- ↓
-Agent Gateway
- ↓
-Orchestrator
- ├── Planner Agent  ──→  DeepSeek R1 (OpenRouter)
- │                       Outputs: { intent, source_priority, reasoning_steps }
- │
- ├── Research Agents ──→  News Agent / Finance Agent / Trend Agent
- │                        Sources: Yahoo Finance, Moneycontrol, GNews
- │
- ├── Reasoning Agent ──→  Cross-validation & Confidence Scoring
- │
- └── Synthesizer ──→  OpenRouter (auto model)
-                       Outputs: { summary, bullets, confidence, sources, trace }
- ↓
-Response Agent
- └── Sarvam AI TTS  ──→  Voice Output
- ↓
-Frontend (Research Result Card)
-```
+![alt text](image.png)
 
 ### Core Architecture Principles
 
@@ -409,23 +384,7 @@ Daily quota exhaustion triggers a permanent open for the browser session, auto-r
 
 ## 11. Voice System
 
-The Voice page (`/voice`) implements a complete voice research loop:
-
-```
-User speaks
-     ↓
-Web Speech API (SpeechRecognition)
-     ↓
-Live transcript displayed (AnimatePresence)
-     ↓
-getGeminiPlan(transcript)      ← Planner Agent
-     ↓
-synthesizeResearch(transcript) ← Synthesizer Agent
-     ↓
-sarvamTTS(result.summary)      ← Sarvam AI API
-     ↓
-Audio played back (base64 MP3)
-```
+![alt text](image-1.png)
 
 **TTS Configuration:**
 ```json

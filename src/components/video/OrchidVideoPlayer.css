@@ -1,0 +1,432 @@
+/* OrchidVideoPlayer.css - Claude-Themed Premium Custom Controls */
+
+.orchid-video-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 5rem;
+  background-color: var(--ink); /* Rich charcoal background */
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.orchid-video-container:hover {
+  border-color: color-mix(in srgb, var(--crail) 30%, var(--line));
+}
+
+.orchid-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+/* Center Large Play Button Overlay */
+.center-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-color: rgba(25, 23, 20, 0.18);
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.center-play-overlay.faded {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.center-play-overlay.faded .center-play-btn {
+  transform: scale(0.75);
+}
+
+.center-play-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(244, 243, 238, 0.15); /* Claude warm light translucent */
+  backdrop-filter: blur(16px);
+  color: var(--white);
+  font-size: 2.4rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              background-color 0.2s ease, 
+              border-color 0.2s ease, 
+              box-shadow 0.2s ease;
+  padding-left: 6px; /* Visual centering of play triangle */
+}
+
+.center-play-btn:hover {
+  transform: scale(1.1);
+  background: rgba(193, 95, 60, 0.35); /* Terracotta tint */
+  border-color: var(--crail);
+  box-shadow: 0 16px 40px rgba(193, 95, 60, 0.35);
+}
+
+.center-play-btn svg {
+  stroke: var(--white);
+  fill: var(--white);
+  width: 28px;
+  height: 28px;
+}
+
+/* Video Control Bar */
+.video-controls-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 24px 20px 24px;
+  background: linear-gradient(
+    to top,
+    rgba(25, 23, 20, 0.95) 0%,
+    rgba(25, 23, 20, 0.5) 70%,
+    rgba(25, 23, 20, 0) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 3;
+  transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1), 
+              transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.hide-controls .video-controls-bar {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+/* Timeline/Progress Row */
+.timeline-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.video-timeline-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  transition: height 0.15s ease;
+}
+
+.timeline-row:hover .video-timeline-slider {
+  height: 6px;
+}
+
+/* Slider Track Fill Webkit */
+.video-timeline-slider::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* Slider Thumb Webkit */
+.video-timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--crail); /* Terracotta rim */
+  margin-top: -3px;
+  transform: scale(0);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-row:hover .video-timeline-slider::-webkit-slider-thumb {
+  transform: scale(1.1);
+  margin-top: -3px;
+}
+
+.video-timeline-slider::-webkit-slider-thumb:hover {
+  background: var(--crail);
+  border-color: var(--white);
+  transform: scale(1.3);
+}
+
+/* Firefox styling for slider */
+.video-timeline-slider::-moz-range-track {
+  background: transparent;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.video-timeline-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--crail);
+  transform: scale(0);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+.timeline-row:hover .video-timeline-slider::-moz-range-thumb {
+  transform: scale(1.1);
+}
+
+.video-timeline-slider::-moz-range-thumb:hover {
+  background: var(--crail);
+  border-color: var(--white);
+  transform: scale(1.3);
+}
+
+/* Controls Action Row */
+.controls-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-group-left,
+.control-group-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Action buttons styling */
+.control-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, 
+              color 0.2s ease, 
+              transform 0.15s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+
+.control-btn:active {
+  transform: scale(0.92);
+}
+
+/* Play/Pause Button Specifics */
+.play-pause-btn {
+  font-size: 1.35rem;
+}
+
+/* Skip Buttons */
+.skip-btn {
+  position: relative;
+  font-size: 1.15rem;
+}
+
+.skip-label {
+  position: absolute;
+  font-size: 0.5rem;
+  font-weight: 800;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  letter-spacing: -0.05em;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-sans);
+}
+
+/* Volume control container & slider */
+.volume-control-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 20px;
+  padding-right: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.volume-control-group:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.video-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  opacity: 0;
+  height: 3px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
+              opacity 0.2s ease;
+}
+
+.volume-control-group:hover .video-volume-slider,
+.video-volume-slider:focus {
+  width: 65px;
+  opacity: 1;
+  margin-right: 6px;
+}
+
+/* Volume Slider Webkit */
+.video-volume-slider::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 100%;
+}
+
+.video-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--white);
+  margin-top: -3.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Volume Slider Firefox */
+.video-volume-slider::-moz-range-track {
+  background: transparent;
+  height: 100%;
+}
+
+.video-volume-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+/* Time Display */
+.video-time-display {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+  margin-left: 4px;
+}
+
+.time-divider {
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 2px;
+}
+
+/* Speed selector button */
+.speed-selector-container {
+  position: relative;
+}
+
+.speed-btn {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  width: auto;
+  min-width: 44px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.speed-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Speed Dropdown Menu */
+.speed-dropdown-menu {
+  position: absolute;
+  bottom: 48px;
+  right: 0;
+  background: rgba(25, 23, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 110px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  animation: slideUpFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.speed-option-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.speed-option-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.speed-option-btn.active {
+  color: var(--crail);
+  background: rgba(193, 95, 60, 0.15);
+  font-weight: 600;
+}
+
+/* Fullscreen Mode Specific Handles */
+.orchid-video-container:fullscreen {
+  border-radius: 0;
+  border: none;
+  aspect-ratio: auto;
+  width: 100vw;
+  height: 100vh;
+}
+
+.orchid-video-container:fullscreen .orchid-video-element {
+  object-fit: contain;
+}
+
+.orchid-video-container:fullscreen .video-controls-bar {
+  padding: 30px 48px 36px 48px;
+}

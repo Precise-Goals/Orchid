@@ -1554,3 +1554,13 @@ header.top-nav {
 body::before {
     background: linear-gradient(140deg, rgba(193, 95, 60, 0.12), transparent 36%), linear-gradient(313deg, rgba(52, 124, 131, 0.13), transparent 34%), radial-gradient(circle at 50% 0%, rgb(255 255 255 / 22%), transparent 32%);
 }
+
+.orchid2 {
+  width: 100%;
+  max-width: 1000px;
+  margin: 60px auto 80px auto;
+  display: flex;
+  justify-content: center;
+  
+  align-items: center;
+}

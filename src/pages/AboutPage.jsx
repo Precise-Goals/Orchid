@@ -4,11 +4,11 @@ import {
   FiSend,
   FiCpu,
   FiShield,
-  FiZap,
   FiLayout,
 } from "react-icons/fi";
 import { useState } from "react";
 import { samplePrompts } from "../data/research";
+import { OrchidVideoPlayer } from "../components/video/OrchidVideoPlayer";
 
 export function AboutPage() {
   const navigate = useNavigate();
@@ -42,6 +42,9 @@ export function AboutPage() {
         <h1>Orchid.</h1>
         <p>A revolutionary approach to research and analysis.</p>
         <img src="/vec.jpg" alt="" />
+      </div>
+      <div className="orchid2">
+        <OrchidVideoPlayer src="/orchid.mp4" />
       </div>
       <div className="bento-grid">
         <div className="bento-item tall crail-bg">
